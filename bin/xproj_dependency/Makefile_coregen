@@ -1,0 +1,36 @@
+# Description : Makefile to build cores from XCO file
+# Exceptions : Might not work for MIG cores due to dependency files
+# Usage : make 
+# Usage : make clean 
+.SUFFIXES: .xco .ngc
+
+.PHONY: clean
+
+ALL: $(patsubst %.xco, %.ngc, $(wildcard *.xco)) 
+
+.xco.ngc :
+	coregen -p coregen.cgp -b $<
+	touch $@
+
+clean:
+	-rm -rf tmp
+	-rm -rf _xmsgs
+	-rm -rf coregen.log 
+	-rm -rf *.cgc
+	-rm -rf *.vho
+	-rm -rf *.veo
+	-rm -rf *.vhd
+	-rm -rf *.v
+	-rm -rf *.ngc
+	-rm -rf *.asy
+	-rm -rf *.sym
+	-rm -rf *.cdc
+	-rm -rf *.pdf
+	-rm -rf *.xise
+	-rm -rf .lso
+	-rm -rf *.gise
+	-rm -rf *.ise
+	-rm -rf *_flist.txt
+	-rm -rf *_readme.txt
+	-rm -rf *_xdb
+	-rm -rf *_xmdf.*

@@ -1,0 +1,28 @@
+# Description : Makefile to build isim executable
+# Usage : make 
+# Usage : make clean 
+# For Xilinx iSim Libray mapping refer to $XILINX/ISE_DE/vhdl/nt/xilinxsim.ini file.
+# iSim uses the xilisim.ini file for both vhdl and verilog Library mapping.
+
+TARGET=<xproj_srai_design_name>
+PROJECT_FILE=$(TARGET).prj
+
+ISIM_OPTIONS  = work.$(TARGET) -prj $(PROJECT_FILE) -o $(TARGET)_isim.exe work.glbl -L unisims_ver -L secureip -L xilinxcorelib_ver -L unimacro_ver
+
+ISIM_OPTIONS_HW_COSIM  = work.$(TARGET) -prj $(PROJECT_FILE) -o $(TARGET)_isim.exe work.glbl -L unisims_ver -L secureip -L xilinxcorelib_ver -L unimacro_ver --hwcosim_instance $(TARGET)/UUT --hwcosim_clock clk --hwcosim_board "ML505-JTAG"
+
+EXE = $(TARGET)_isim.exe
+
+
+EXE : $(EXE)
+$(EXE):
+	fuse $(ISIM_OPTIONS)
+
+
+
+clean:
+	-rm -f *.log 
+	-rm -f *.wdb 
+	-rm -f $(TARGET)_isim.exe
+	-rm -rf isim
+	-rm -rf isim.wdb

@@ -1,0 +1,1 @@
+perl -S gen_ip_wrapper.pl $1

@@ -1,0 +1,23 @@
+run
+-ifn <xproj_srai_design_name>.prj
+-ofn ise_results/<xproj_srai_design_name>
+-top <xproj_srai_design_name>
+-p <xproj_srai_device_name>
+-ofmt NGC
+-ifmt mixed
+-opt_mode Speed
+-opt_level 2
+-iuc NO
+-keep_hierarchy NO
+-rtlview Yes
+-hierarchy_separator /
+-bus_delimiter <>
+-case maintain
+-fsm_extract YES -fsm_encoding Auto
+-safe_implementation No
+-resource_sharing YES
+-iobuf YES
+-pld_mp YES
+-pld_xp YES
+-wysiwyg NO
+-equivalent_register_removal YES

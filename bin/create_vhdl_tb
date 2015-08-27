@@ -1,0 +1,1 @@
+perl -S create_vhdl_tb.pl $1

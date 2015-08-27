@@ -1,0 +1,106 @@
+TARGET=<xproj_srai_design_name>
+ISE_RESULTS_DIR=ise_results
+EDK_RESULTS_DIR=edk_results
+PROJECT_FILE=$(TARGET).prj
+TOP_MODULE=$(TARGET)
+PROCESSOR_SUBSYS=system
+DEVICE=<xproj_srai_device_name>
+IP_dirs  = -sd ../coregen
+IP_dirs += -sd synth_results 
+IP_dirs += -sd $(EDK_RESULTS_DIR)/implementation
+Bit_file_ID=0xAAAAAAAA
+RANDOM_SEED=37
+
+
+PLATGEN_OPTIONS = -p $(DEVICE) -lang vhdl -od $(EDK_RESULTS_DIR) -toplevel no -ti Inst_system
+MAP_OPTIONS  = -timing -detail -ignore_keep_hierarchy -xe n -ol high -t $(RANDOM_SEED) -p $(DEVICE) -pr b
+PAR_OPTIONS  = -w  -xe n -ol high
+TRCE_OPTIONS = -v 100 -u 100 -l 100 -tsi $(ISE_RESULTS_DIR)/$(TARGET).tsi
+
+BITGEN_OPTS_0 = -g DebugBitstream:No -g Binary:no -g CRC:Enable -g UnusedPin:PullDown
+BITGEN_OPTS_1 = -g StartUpClk:CCLK -g DONE_cycle:4 -g GTS_cycle:5 -g GWE_cycle:6
+BITGEN_OPTS_2 = -g LCK_cycle:NoWait -g DriveDone:No -g UserID:$(Bit_file_ID)
+BITGEN_OPTIONS = $(BITGEN_OPTS_0) $(BITGEN_OPTS_1) $(BITGEN_OPTS_2)
+
+UCF = ../src/$(TARGET).ucf
+MHS = ../src/$(PROCESSOR_SUBSYS).mhs
+EDK = $(EDK_RESULTS_DIR)/implementation/$(PROCESSOR_SUBSYS).ngc
+NGC = synth_results/$(TARGET).ngc
+NGD = $(ISE_RESULTS_DIR)/$(TARGET).ngd
+MAP = $(ISE_RESULTS_DIR)/$(TARGET)_map.ncd
+PAR = $(ISE_RESULTS_DIR)/$(TARGET).ncd
+BIT = $(ISE_RESULTS_DIR)/$(TARGET).bit
+IBS = $(ISE_RESULTS_DIR)/$(TARGET).ibs
+MCS = $(ISE_RESULTS_DIR)/$(TARGET).mcs
+TWR = $(ISE_RESULTS_DIR)/$(TARGET).twr
+PCF = $(ISE_RESULTS_DIR)/$(TARGET).pcf
+PWR = $(ISE_RESULTS_DIR)/$(TARGET).pwr
+
+MCS: $(MCS)
+$(MCS): $(BIT)
+	#promgen -w -p mcs -c FF -o $(ISE_RESULTS_DIR)/$(TARGET) -u 0 $(BIT)
+
+IBS: $(IBS)
+$(IBS): $(PAR)
+	#ibiswriter  -allmodels $(PAR) $(ISE_RESULTS_DIR)/$(TARGET).ibs
+
+BIT: $(BIT)
+$(BIT): $(PAR)
+	#netgen  -ofmt vhdl -pcf $(PCF) -w $(PAR) $(ISE_RESULTS_DIR)/$(TARGET)_par.vhd
+	bitgen -w -m $(BITGEN_OPTIONS) $(PAR)  $(BIT)  $(PCF)
+
+PAR: $(PAR)
+$(PAR): $(MAP)
+	par $(PAR_OPTIONS) $(MAP) $(PAR) $(PCF)
+	@if test -e xpartition.pxml; then cp -r xpartition.pxml $(ISE_RESULTS_DIR); fi
+	#xpwr  $(PAR) $(PCF) -o $(PWR)
+	trce -o $(TWR) $(TRCE_OPTIONS) $(PAR) $(PCF)
+
+MAP: $(MAP)
+$(MAP): $(NGD)
+	map $(MAP_OPTIONS) -o $(MAP) $(NGD) $(PCF)
+
+NGD: $(NGD)
+$(NGD): $(NGC)
+	#netgen -ofmt vhdl -w $(NGC) $(ISE_RESULTS_DIR)/$(TARGET)_xst.vhd
+	ngdbuild  -verbose -uc $(UCF) -p $(DEVICE) $(IP_dirs) $(NGC) $(NGD)
+
+NGC : $(NGC)
+$(NGC):
+	xst -ifn $(TARGET).xst
+
+#EDK : $(EDK)
+#$(EDK): $(MHS)
+#	platgen $(PLATGEN_OPTIONS) $(MHS) 
+#	cd $(EDK_RESULTS_DIR)/synthesis && xst -ifn $(PROCESSOR_SUBSYS)_xst.scr -intstyle silent
+
+
+clean:
+	-rm -rf tmp
+	-rm -rf _xmsgs
+	-rm -f $(TARGET).lso
+	-rm -f $(TARGET).srp
+	-rm -f $(TARGET).ibs
+	-rm -rf xst
+	-rm -f netlist.lst
+	-rm -rf xlnx_auto_*
+	-rm -rf *.xrpt
+	-rm -rf par_usage_statistics.html
+	-rm -rf xilinx_device_details.xml
+	-rm -rf $(ISE_RESULTS_DIR)/*
+clean_all:
+	-rm -rf tmp
+	-rm -rf _xmsgs
+	-rm -f $(TARGET).lso
+	-rm -f $(TARGET).srp
+	-rm -f $(TARGET).ibs
+	-rm -rf xst
+	-rm -f netlist.lst
+	-rm -rf xlnx_auto_*
+	-rm -rf *.xrpt
+	-rm -rf par_usage_statistics.html
+	-rm -rf xilinx_device_details.xml
+	-rm -rf $(ISE_RESULTS_DIR)/*
+	-rm -rf $(EDK_RESULTS_DIR)/*
+	-rm -rf synth_results/*
+

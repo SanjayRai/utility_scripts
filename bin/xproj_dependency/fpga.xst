@@ -1,0 +1,15 @@
+run
+-ifn <xproj_srai_design_name>.prj
+-ofn synth_results/<xproj_srai_design_name>
+-top <xproj_srai_design_name>
+-p <xproj_srai_device_name>
+-sd {../coregen edk_results/implementation ../synth_results} 
+-ifmt mixed
+-opt_mode Speed
+-opt_level 2
+-keep_hierarchy YES
+-read_cores YES
+-iobuf YES
+-max_fanout 500
+-register_duplication YES
+-iob auto

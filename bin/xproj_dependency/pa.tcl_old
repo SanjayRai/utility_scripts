@@ -1,0 +1,23 @@
+set DESIGN_NAME "<xproj_srai_design_name>"
+set PROJECT_NAME "planAhead_prj1"
+set DEVICE "<xproj_srai_device_name>"
+set NETLIST "../build/ise_results/$DESIGN_NAME.ngc"
+set CORE_SEARCH_PATH "../coregen ../build/edk_results/implementation"
+set UCF_FILE "../src/$DESIGN_NAME.ucf"
+set NCD_FILE "../build/ise_results/$DESIGN_NAME.ncd"
+set TWX_FILE "../build/ise_results/$DESIGN_NAME.twx"
+
+create_project $PROJECT_NAME $PROJECT_NAME
+set_property design_mode GateLvl [get_property srcset [current_run]]
+set_property edif_top_file $NETLIST [get_property srcset [current_run]]
+add_files $CORE_SEARCH_PATH
+set_property name floorplan_1 [get_filesets constrs_1]
+set_property target_part $DEVICE [get_filesets floorplan_1]
+open_netlist_design -constrset floorplan_1 -part $DEVICE  
+read_ucf $UCF_FILE
+read_xdl -file $NCD_FILE 
+read_twx results_par_twr $TWX_FILE 
+#set_delay_model -interconnect none
+#report_timing -delay_type max -path_type full_clock_expanded -max_paths 10 -nworst 3 -sort_by slack -significant_digits 3 -input_pins -nets -results results_ta_1 -file planAhead_ta.twr
+current_design floorplan_1
+#save_design

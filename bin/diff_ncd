@@ -1,0 +1,2 @@
+perl -S diff_ncd.pl $1 $2
+

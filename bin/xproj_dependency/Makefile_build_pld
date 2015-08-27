@@ -1,0 +1,46 @@
+TARGET=<xproj_srai_design_name>
+RESULTS_DIR=ise_results
+PROJECT_FILE=$(TARGET).prj
+TOP_MODULE=$(TARGET)
+DEVICE=<xproj_srai_device_name>
+
+
+NGC = $(RESULTS_DIR)/$(TARGET).ngc
+NGD = $(RESULTS_DIR)/$(TARGET).ngd
+VM6 = $(RESULTS_DIR)/$(TARGET).vm6
+JED = $(RESULTS_DIR)/$(TARGET).jed
+
+JED: $(JED)
+$(JED): $(VM6)
+	cd $(RESULTS_DIR);hprep6 -s IEEE1149 -i $(TARGET).vm6
+
+VM6: $(VM6)
+$(VM6): $(NGD)
+	cd $(RESULTS_DIR);cpldfit  -p $(DEVICE) -ofmt vhdl -optimize speed -slew fast -init low $(TARGET).ngd
+
+NGD: $(NGD)
+$(NGD): $(NGC)
+	netgen 	 -ofmt vhdl -w $(RESULTS_DIR)/$(TARGET).ngc $(RESULTS_DIR)/$(TARGET)_xst.vhd
+	ngdbuild  -p $(DEVICE) $(RESULTS_DIR)/$(TARGET).ngc $(RESULTS_DIR)/$(TARGET).ngd
+
+NGC : $(NGC)
+$(NGC):
+	xst -ifn $(TARGET).xst
+
+
+
+clean:
+	-rm -rf tmp
+	-rm -rf _xmsgs
+	-rm -f $(TARGET).lso
+	-rm -f $(TARGET).srp
+	-rm -f $(TARGET).ibs
+	-rm -rf xst
+	-rm -rf work
+	-rm -rf dump.xst
+	-rm -f netlist.lst
+	-rm -rf xlnx_auto_*
+	-rm -rf *.xrpt
+	-rm -rf par_usage_statistics.html
+	-rm -rf xilinx_device_details.xml
+	-rm -rf $(RESULTS_DIR)/*

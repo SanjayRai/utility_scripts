@@ -1,0 +1,69 @@
+#-- Synopsys, Inc.
+#-- Version E-2010.09-SP2
+#-- Project file C:\projects\training_planAhead\video_io_projects\test7_synplicity\video_io\syn_synplify\video_io.prj
+
+#project files
+add_file -verilog "../src/<xproj_srai_design_name>.v"
+
+
+#implementation: "db"
+impl -add db -type fpga
+
+#
+#implementation attributes
+
+set_option -vlog_std v2001
+set_option -project_relative_includes 1
+set_option -enable_nfilter 0
+
+#device options
+set_option -technology <xproj_srai_device_name>
+set_option -part XC5VLX50T
+set_option -package FF1136
+set_option -speed_grade -1
+set_option -part_companion ""
+
+#compilation/mapping options
+set_option -use_fsm_explorer 0
+set_option -top_module "work.video_io"
+
+# mapper_options
+set_option -frequency auto
+set_option -write_verilog 0
+set_option -write_vhdl 0
+
+# Xilinx Virtex2
+set_option -run_prop_extract 1
+set_option -maxfan 100
+set_option -disable_io_insertion 0
+set_option -pipe 1
+set_option -update_models_cp 0
+set_option -retiming 0
+set_option -no_sequential_opt 0
+set_option -fixgatedclocks 3
+set_option -fixgeneratedclocks 3
+
+# Xilinx Virtex5
+set_option -enable_prepacking 1
+
+# NFilter
+set_option -popfeed 0
+set_option -constprop 0
+set_option -createhierarchy 0
+
+# sequential_optimization_options
+set_option -symbolic_fsm_compiler 1
+
+# Compiler Options
+set_option -compiler_compatible 0
+set_option -resource_sharing 1
+
+#VIF options
+set_option -write_vif 1
+
+#automatic place and route (vendor) options
+set_option -write_apr_constraint 1
+
+#set result format/file last
+project -result_file "./db/video_io.edf"
+impl -active "db"

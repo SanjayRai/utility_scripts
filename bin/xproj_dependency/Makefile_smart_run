@@ -1,0 +1,16 @@
+# Description : Makefile to run smartXplorer 
+# Usage : make 
+# Usage : make clean 
+
+.PHONY: clean
+
+smartxplorer.log : strategies.sf smartxplorer.hostlist
+	smartxplorer -p <xproj_srai_device_name> ../build/ise_results/<xproj_srai_design_name>.ngd -sf strategies.sf -to "-v 10 -u -l 10" -run_all_strategies
+
+clean:
+	-rm -rf run*
+	-rm -rf *.log 
+	-rm -rf *.html 
+	-rm -rf smartxplorer.xml 
+	-rm -rf smartxplorer.txt 
+	-rm -rf .smartxplorer
