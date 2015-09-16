@@ -19,7 +19,7 @@ $PROJECT_vivado_project_FILE = $PROJ_DEPENDENCY_DIR."/vivado_project/vivado_proj
 ($second, $minute, $hour, $dayOfMonth, $month, $yearOffset, $dayOfWeek, $dayOfYear, $daylightSavings) = localtime();
 $year = 1900 + $yearOffset;
 $Date_and_Time = "$hour:$minute:$second, $weekDays[$dayOfWeek] $months[$month] $dayOfMonth, $year";
-$ERROR_MSG = "\n !ERROR\n \n Usage :\n \t xproj project_name device_name [-verilog] \n\n Example:\n \t xproj test_design xc5vlx50t-1-ff1136\n\n";
+$ERROR_MSG = "\n !ERROR\n \n Usage :\n \t gen_vivado_project project_name \n\n";
 
 if (($#ARGV < 0) || ($#ARGV > 0)) {
     print "Error $#ARGV received for args \n";
