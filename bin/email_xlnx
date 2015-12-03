@@ -1,0 +1,1 @@
+echo "Mail from  Sanjay Rai (Gmail)" | mail -s "Mail from Sanjay Rai (Gmail)" -a $1 -r "sanjay.d.rai@gmail.com" sanjay.rai@xilinx.com
